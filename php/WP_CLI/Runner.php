@@ -302,6 +302,9 @@ class Runner {
 
 		$this->init_logger();
 
+		if ( isset( $this->config['require'] ) )
+			require $this->config['require'];
+
 		$_SERVER['DOCUMENT_ROOT'] = realpath( $this->config['path'] );
 
 		if ( $this->cmd_starts_with( array( '_sys' ) ) ) {
@@ -365,9 +368,6 @@ class Runner {
 
 		// Handle --user parameter
 		self::set_user( $this->config );
-
-		if ( isset( $this->config['require'] ) )
-			require $this->config['require'];
 
 		// Handle --completions parameter
 		if ( isset( $this->assoc_args['completions'] ) ) {
