@@ -14,6 +14,8 @@ class WP_CLI {
 
 	private static $logger;
 
+	private static $hooks = array(), $hooks_passed = array();
+
 	private static $man_dirs = array();
 
 	/**
@@ -36,6 +38,28 @@ class WP_CLI {
 	 */
 	static function set_logger( $logger ) {
 		self::$logger = $logger;
+	}
+
+	/**
+	 * Schedule a callback to be executed at a certain point (before WP is loaded).
+	 */
+	static function add_hook( $when, $callback ) {
+		if ( in_array( $when, self::$hooks_passed ) )
+			call_user_func( $callback );
+
+		self::$hooks[ $when ][] = $callback;
+	}
+
+	/**
+	 * Execute registered callbacks.
+	 */
+	static function do_hook( $when ) {
+		self::$hooks_passed[] = $when;
+
+		if ( !isset( self::$hooks[ $when ] ) )
+			return;
+
+		array_map( 'call_user_func', self::$hooks[ $when ] );
 	}
 
 	/**

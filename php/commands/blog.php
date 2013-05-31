@@ -278,11 +278,12 @@ class MS_Blog_Command extends Blog_Command {
 	}
 }
 
-// We want multisite subcommands to be available when doing `wp help --gen blog`
-if ( !function_exists( 'add_filter' ) || is_multisite() )
-	$command_class = 'MS_Blog_Command';
-else
-	$command_class = 'Blog_Command';
+WP_CLI::add_hook( 'after_wp_load', function() {
+	if ( is_multisite() )
+		$command_class = 'MS_Blog_Command';
+	else
+		$command_class = 'Blog_Command';
 
-WP_CLI::add_command( 'blog', $command_class );
+	WP_CLI::add_command( 'blog', $command_class );
+} );
 
